@@ -1,10 +1,11 @@
 import { NestFactory } from "@nestjs/core"
 import { AppModule } from "./app.module"
+import { envConfig } from "./config/env.config"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.setGlobalPrefix("api")
-  await app.listen(8000)
+  await app.listen(envConfig.apiPort)
 }
 
 bootstrap()
