@@ -5,7 +5,7 @@ const nextConfig = {
     unoptimized: true
   },
   output: "export",
-  trailingSlash: process.env.NODE_ENV === "production" ? true : false
+  trailingSlash: process.env.NODE_ENV === "production"
 }
 
 module.exports = nextConfig
