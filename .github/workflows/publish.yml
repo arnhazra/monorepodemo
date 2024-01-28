@@ -39,7 +39,9 @@ jobs:
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Cleanup S1
-        run: rm -r dist
+        run: |
+          cd dist
+          npm uninstall arcstack
 
       - name: Cleanup S2
         run: |
