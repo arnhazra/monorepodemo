@@ -39,9 +39,7 @@ jobs:
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Cleanup S1
-        run: |
-          cd dist/
-          npm uninstall monorepo
+        run: rm -r dist
 
       - name: Cleanup S2
         run: |
