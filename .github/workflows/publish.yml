@@ -1,9 +1,7 @@
 name: PROD CI-CD
-
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 on:
   push:
     branches:
@@ -13,41 +11,20 @@ jobs:
   PROD-CI-CD:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v2
       - name: Install Vercel CLI
-        run: |
-          npm install --global vercel
+        run: npm install --global vercel
 
-      - name: Clean Server Dependencies
-        run: |
-          cd apps/server
-          rm -rf node_modules
-
-      - name: Install Server Dependencies
+      - name: Build server application
         run: |
           cd apps/server
           npm install
-
-      - name: Build Server Application
-        run: |
-          cd apps/server
           CI=false npm run build
 
-      - name: Clean Client Dependencies
-        run: |
-          cd apps/client
-          rm -rf node_modules
-
-      - name: Install Client Dependencies
+      - name: Build client application
         run: |
           cd apps/client
           npm install
-
-      - name: Build Client Application
-        run: |
-          cd apps/client
           CI=false npm run build
 
       - name: Build Movement
@@ -58,12 +35,10 @@ jobs:
           mv apps/client/out dist/client
 
       - name: Pull Vercel Environment Information
-        run: |
-          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Project Artifacts
-        run: |
-          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Cleanup
         run: |
@@ -71,5 +46,4 @@ jobs:
           npm uninstall arcstack @nestjs/cli @nestjs/schematics @nestjs/testing @types/express @types/node concurrently source-map-support ts-loader ts-node tsconfig-paths typescript
 
       - name: Publish Project Artifacts to Vercel
-        run: |
-          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
