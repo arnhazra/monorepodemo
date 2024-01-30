@@ -15,24 +15,24 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel
 
-      - name: Build main nest application
+      - name: Build server application
         run: |
+          cd apps/server
           npm install
           CI=false npm run build
 
       - name: Build client application
-        working-directory: client
         run: |
+          cd apps/client
           npm install
           CI=false npm run build
 
-      - name: Copy Dependencies to build
+      - name: Build Movement
         run: |
-          cp -r ./package.json dist
-
-      - name: Move client build output to server dist directory
-        run: |
-          mv client/out dist/client
+          mkdir dist
+          cp -r apps/server/package.json dist
+          cp -r apps/server/dist/. dist
+          mv apps/client/out dist/client
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
@@ -40,10 +40,5 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Cleanup
-        run: |
-          cd .vercel/output/functions/dist/main.js.func/dist
-          npm uninstall @nestjs/cli @nestjs/testing @types/express @types/node concurrently
-
-      - name: Deploy Project Artifacts to Vercel
+      - name: Publish Project Artifacts to Vercel
         run: vercel deploy --token=${{secrets.VERCEL_TOKEN}} --archive=tgz --prebuilt --prod
