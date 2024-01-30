@@ -40,7 +40,12 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Cleanup
+      - name: Cleanup S1
+        run: |
+          cd dist
+          npm uninstall @openzeppelin/contracts @nestjs/cli @nestjs/schematics @nestjs/testing @types/express @types/node concurrently source-map-support ts-loader ts-node tsconfig-paths typescript
+
+      - name: Cleanup S2
         run: |
           cd .vercel/output/functions/dist/main.js.func/dist
           npm uninstall @openzeppelin/contracts @nestjs/cli @nestjs/schematics @nestjs/testing @types/express @types/node concurrently source-map-support ts-loader ts-node tsconfig-paths typescript
