@@ -12,25 +12,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Install Vercel CLI
         run: npm install --global vercel
 
       - name: Build server application
+        working-directory: apps/server
         run: |
-          cd apps/server
           npm install
           CI=false npm run build
 
       - name: Build client application
+        working-directory: apps/client
         run: |
-          cd apps/client
           npm install
           CI=false npm run build
+
+      - name: Configure packages
+        working-directory: apps/server
+        run: |
+          npm install --global json
+          json -I -f package.json -e 'delete this.devDependencies'
 
       - name: Build Movement
         run: |
           mkdir dist
-          cp -r apps/server/package.json dist
+          cp -r apps/server/package.json dist/package.json
           cp -r apps/server/dist/. dist
           mv apps/client/out dist/client
 
@@ -41,4 +48,4 @@ jobs:
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Publish Project Artifacts to Vercel
-        run: vercel deploy --token=${{secrets.VERCEL_TOKEN}} --archive=tgz --prebuilt --prod
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
